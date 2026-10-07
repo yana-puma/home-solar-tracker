@@ -44,6 +44,8 @@ def public_files(root: Path):
 
 
 def audit_source(root: Path, files, private_policy: Path | None = None):
+    if private_policy is not None and not private_policy.is_file():
+        raise ValueError('The requested private marker policy is missing; refusing to skip it.')
     policy_path = private_policy or root/'data/private/sensitive-markers.json'
     policy = json.loads(policy_path.read_text()) if policy_path.exists() else {}
     markers = [str(value).casefold() for value in policy.get('textMarkers', []) if value]
@@ -97,6 +99,6 @@ if __name__ == '__main__':
     args=parser.parse_args()
     try:
         count=export_source(args.root,args.output,args.private_markers)
-        print(f'Public source audit passed: {count} files.\nClean source ZIP: {args.output}\nNo Git history, private folders, or non-demo models included. Existing checkout history remains private and must not be pushed.')
+        print(f'Public source audit passed: {count} files.\nClean source ZIP: {args.output}\nNo Git history, private folders, or non-demo models included. Never include pre-cleanup Git history in the public repository.')
     except (ValueError, OSError, json.JSONDecodeError) as error:
         print(f'Public source export blocked: {error}',file=sys.stderr);sys.exit(1)

@@ -36,6 +36,12 @@ class PublicSourceTests(unittest.TestCase):
             self.assertTrue(any('Known personal marker' in item for item in findings))
             self.assertTrue(any('Private model matches' in item for item in findings))
 
+    def test_explicit_missing_marker_policy_cannot_silently_skip_privacy_checks(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);generate_demo(root)
+            with self.assertRaisesRegex(ValueError,'policy is missing'):
+                audit_source(root,public_files(root),root/'missing-policy.json')
+
     def test_extra_house_asset_and_public_symlink_are_rejected(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);generate_demo(root)
