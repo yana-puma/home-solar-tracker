@@ -1,0 +1,16 @@
+.DS_Store
+.venv/
+__pycache__/
+*.py[cod]
+.matplotlib/
+
+# Source survey/GIS material and generated artifacts are private build inputs.
+data/
+output/
+local-properties/
+
+# Local deployment metadata and environment secrets.
+.vercel/
+.env
+.env.*
+!.env.example

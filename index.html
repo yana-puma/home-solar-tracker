@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Property Solar &amp; Shade Tracker</title>
+  <style>
+    :root {
+      --bg-dark: #0d1117;
+      --panel-bg: rgba(22, 27, 34, 0.94);
+      --panel-border: rgba(255, 255, 255, 0.14);
+      --accent-gold: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-green: #10b981;
+      --accent-blue: #38bdf8;
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text-main);
+      touch-action: none;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      cursor: default;
+      touch-action: none;
+    }
+
+    /* ============================================================
+       FLOATING ACTION BUTTON (FAB) IN BOTTOM RIGHT
+       ============================================================ */
+    .fab-btn {
+      position: absolute;
+      bottom: 24px;
+      right: 20px;
+      z-index: 50;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4), 0 2px 8px rgba(0, 0, 0, 0.4);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .fab-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 12px 28px rgba(245, 158, 11, 0.55);
+    }
+
+    .fab-btn:active {
+      transform: scale(0.96);
+    }
+
+    .fab-btn.open {
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid var(--panel-border);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    }
+
+    .fab-btn.open .fab-icon {
+      transform: rotate(90deg);
+    }
+
+    .fab-icon {
+      font-size: 16px;
+      transition: transform 0.25s ease;
+    }
+
+    /* ============================================================
+       EXPANDABLE ACTION MENU CARD (Bottom-Right Anchored)
+       ============================================================ */
+    .fab-menu-card {
+      position: absolute;
+      bottom: 82px;
+      right: 20px;
+      z-index: 49;
+      width: 390px;
+      max-width: calc(100vw - 40px);
+      max-height: calc(100vh - 110px);
+      background: var(--panel-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      padding: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+      display: flex;
+      flex-direction: column;
+      transform: translateY(20px) scale(0.96);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    .fab-menu-card.active {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Tabs Header */
+    .menu-tabs-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 10px;
+    }
+
+    .tab-btn-group {
+      display: flex;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 11px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tab-btn:hover {
+      color: #fff;
+    }
+
+    .tab-btn.active {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent-gold);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .tab-btn.active-cam {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+
+    .btn-close-menu {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .btn-close-menu:hover {
+      background: rgba(239, 68, 68, 0.3);
+      color: var(--accent-red);
+    }
+
+    /* Tab Content Panels */
+    .tab-content {
+      display: none;
+      flex-direction: column;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    /* ☀️ Solar Tab Controls */
+    .solar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .solar-mode-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .time-display-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 6px;
+    }
+
+    .time-clock {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .time-tz {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .slider-container {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #1e293b 0%, #f59e0b 25%, #38bdf8 50%, #f97316 75%, #0f172a 100%);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid var(--accent-gold);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    /* Seasonal Quick Presets */
+    .preset-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .btn-preset {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 7px 4px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .btn-preset:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .btn-preset.active {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent-gold);
+      border-color: rgba(245, 158, 11, 0.5);
+    }
+
+    .date-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .date-row label {
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .date-input {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      color-scheme: dark;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 9px;
+    }
+
+    .estimate-note {
+      color: var(--text-muted);
+      font-size: 9px;
+      line-height: 1.35;
+      margin: -5px 2px 10px;
+      text-align: center;
+    }
+
+    .estimate-note[data-state="calculating"] { color: var(--accent-gold); }
+    .estimate-note[data-state="calculated"] { color: var(--accent-green); }
+    .estimate-note[data-state="error"] { color: #fca5a5; }
+
+    /* Gardening Sunlight & Shade Telemetry */
+    .garden-hud {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 11px;
+      margin-bottom: 12px;
+    }
+
+    .garden-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .garden-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .hud-label {
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .hud-val {
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .hud-val.highlight {
+      color: var(--accent-green);
+    }
+
+    /* Gardening & Arc Toggle Options (3 Toggles) */
+    .toggle-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .btn-toggle {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 8px 4px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .btn-toggle:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .btn-toggle.active {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent-green);
+      border-color: rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-toggle.active-heatmap {
+      background: rgba(245, 158, 11, 0.25);
+      color: #f59e0b;
+      border-color: rgba(245, 158, 11, 0.6);
+    }
+
+    /* Playback / Timelapse Controls */
+    .controls-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-play {
+      flex: 1;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border: none;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn-play:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-speed {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 0 14px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    /* 📷 Camera Tab Grid */
+    .camera-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn-cam-action {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 12px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-cam-action:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .btn-cam-action.active {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+
+    /* ============================================================
+       INTERACTIVE PLANT RECOMMENDATION CARD (Mobile Responsive)
+       ============================================================ */
+    .plant-modal {
+      position: absolute;
+      top: 24px;
+      right: 20px;
+      z-index: 60;
+      width: 360px;
+      max-height: calc(100vh - 120px);
+      background: var(--panel-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--panel-border);
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+      display: none;
+      flex-direction: column;
+      animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 10px;
+    }
+
+    .modal-title-box h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .modal-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .btn-close-modal {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .btn-close-modal:hover {
+      background: rgba(239, 68, 68, 0.3);
+      color: var(--accent-red);
+    }
+
+    .modal-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 14px;
+    }
+
+    .plant-category-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-top: 10px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .plant-list {
+      list-style: none;
+      margin-bottom: 12px;
+    }
+
+    .plant-item {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 9px 12px;
+      margin-bottom: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .plant-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .plant-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+
+    .plant-desc {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.35;
+    }
+
+    .gardener-tip-box {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 11px;
+      color: #fde68a;
+      line-height: 1.4;
+      margin-top: 8px;
+    }
+
+    .gardener-tip-box strong {
+      color: #fbbf24;
+    }
+
+    /* Loading Overlay */
+    #loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-dark);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid var(--accent-gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Mobile Responsive Optimizations */
+    @media (max-width: 600px) {
+      .fab-btn {
+        bottom: 20px;
+        right: 16px;
+        padding: 10px 16px;
+        font-size: 13px;
+      }
+      .fab-menu-card {
+        bottom: 74px;
+        right: 16px;
+        left: 16px;
+        width: auto;
+        max-width: none;
+        border-radius: 20px;
+        padding: 14px;
+        max-height: calc(100vh - 100px);
+      }
+      .plant-modal {
+        top: auto;
+        bottom: 20px;
+        left: 16px;
+        right: 16px;
+        width: auto;
+        max-height: calc(100vh - 100px);
+        border-radius: 20px;
+        animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      @keyframes slideInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+  </style>
+
+  <style>
+    .local-package-picker { max-width: 620px; padding: 28px; color: #f4f7ee; line-height: 1.5; }
+    .local-package-picker a { color: #ffcb66; }
+    .local-package-picker label { display: block; margin: 20px 0; }
+    .local-package-picker input { display: block; max-width: 100%; margin-top: 12px; }
+  </style>
+  <!-- Import maps polyfill for Three.js ES modules -->
+  <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Floating Action Button (FAB) in Bottom-Right -->
+  <button class="fab-btn" id="fab-toggle" title="Toggle Solar & Camera Controls" aria-controls="fab-menu-card" aria-expanded="false">
+    <span class="fab-icon">☀️</span>
+    <span class="fab-text" id="fab-text">Controls</span>
+  </button>
+
+  <!-- Expandable Floating Action Menu Card -->
+  <div class="fab-menu-card" id="fab-menu-card" aria-hidden="true" inert>
+    <!-- Header with Tabs -->
+    <div class="menu-tabs-header">
+      <div class="tab-btn-group">
+        <button class="tab-btn active" id="tab-btn-solar">☀️ Sun & Shade</button>
+        <button class="tab-btn" id="tab-btn-camera">📷 Views</button>
+      </div>
+      <button class="btn-close-menu" id="btn-close-menu" title="Close Menu" aria-label="Close solar viewer controls">✕</button>
+    </div>
+
+    <!-- TAB 1: ☀️ Sun & Shade Controls -->
+    <div class="tab-content active" id="tab-content-solar">
+      <div class="solar-header">
+        <div class="time-tz" id="location-display">Local time • Configured property</div>
+        <div class="solar-mode-badge" id="mode-badge">Daylight</div>
+      </div>
+
+      <div class="time-display-row">
+        <div class="time-clock" id="clock-display">02:30 PM</div>
+      </div>
+
+      <div class="slider-container">
+        <input type="range" id="time-slider" min="0" max="1439" value="870" step="1" aria-label="Local solar time" aria-valuetext="2:30 PM">
+      </div>
+
+      <div class="date-row">
+        <label for="date-input">Date</label>
+        <input class="date-input" id="date-input" type="date" aria-label="Solar study date">
+      </div>
+
+      <!-- Seasonal Presets -->
+      <div class="preset-row">
+        <button class="btn-preset" id="preset-summer">☀️ Summer (Jun 21)</button>
+        <button class="btn-preset active" id="preset-today">📅 Today</button>
+        <button class="btn-preset" id="preset-winter">❄️ Winter (Dec 21)</button>
+      </div>
+
+      <!-- Gardening Sunlight HUD -->
+      <div class="garden-hud">
+        <div class="garden-row">
+          <span class="hud-label">Sunrise / Sunset</span>
+          <span class="hud-val" id="hud-sun-times">6:22 AM — 8:08 PM</span>
+        </div>
+        <div class="garden-row">
+          <span class="hud-label">Total Daylight</span>
+          <span class="hud-val highlight" id="hud-daylight">13h 46m daylight</span>
+        </div>
+        <div class="garden-row">
+          <span class="hud-label">Solar Position</span>
+          <span class="hud-val" id="hud-solar-pos">Alt: 48.5° • Az: 218° (SW)</span>
+        </div>
+      </div>
+
+      <!-- Visual Layer Toggles (Sun Arc, Sun Hours Map, Compass Rose) -->
+      <div class="toggle-row">
+        <button class="btn-toggle active" id="toggle-arc">☀️ Sun Arc</button>
+        <button class="btn-toggle" id="toggle-heatmap" title="Procedural seasonal estimate, not calculated model exposure">🌻 Ground Sun Map</button>
+        <button class="btn-toggle active" id="toggle-compass">🧭 Compass</button>
+      </div>
+      <div class="estimate-note" id="exposure-status" role="status" aria-live="polite">Not calculated. Run Model Exposure to study ground sunlight.</div>
+
+      <!-- Animation Timelapse Controls -->
+      <div class="controls-row">
+        <button class="btn-play" id="btn-play-loop">▶ Play 24h Timelapse</button>
+        <button class="btn-speed" id="btn-speed">2x</button>
+      </div>
+    </div>
+
+    <!-- TAB 2: 📷 Camera Views Grid -->
+    <div class="tab-content" id="tab-content-camera">
+      <div class="camera-grid">
+        <button class="btn-cam-action active" id="btn-street" title="Front Street View">👁️ Street View</button>
+        <button class="btn-cam-action" id="btn-top" title="Site Plan Garden Overhead">📐 Garden Top</button>
+        <button class="btn-cam-action" id="btn-rear" title="Rear Walkout Basement View">🏡 Rear Walkout</button>
+        <button class="btn-cam-action" id="btn-sky" title="Wide Celestial Sky Overview">🌌 Sky View</button>
+        <button class="btn-cam-action" id="btn-iso" title="Perspective Isometric">🌐 3D Orbit</button>
+        <button class="btn-cam-action" id="btn-spin" title="Auto Rotate">🔄 Auto Spin</button>
+        <button class="btn-cam-action" id="btn-demo-reel" style="grid-column: span 2; background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.25)); border-color: rgba(245, 158, 11, 0.5); color: #fbbf24; font-weight: 700;" title="Play 20s Interactive Demo Reel">🎬 Play 20s Demo Reel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ground sunlight details -->
+  <div class="plant-modal" id="plant-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modal-zone-title" aria-describedby="modal-zone-desc modal-gardener-tip">
+    <div class="modal-header">
+      <div class="modal-title-box">
+        <h3 id="modal-zone-title">Front Lawn Area</h3>
+        <span class="modal-badge" id="modal-zone-badge" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4);">Full Sun • 10.5h</span>
+      </div>
+      <button class="btn-close-modal" id="btn-close-modal" title="Close" aria-label="Close zone details">✕</button>
+    </div>
+    <div class="modal-desc" id="modal-zone-desc">
+      Intense direct sunlight throughout the day. Warmest microclimate on the property.
+    </div>
+    <div id="modal-categories-container"></div>
+    <div class="gardener-tip-box" id="modal-gardener-tip">
+      Compare growing-season dates and check the garden on site.
+    </div>
+  </div>
+
+  <!-- 3D Canvas -->
+  <div id="canvas-container" role="img" aria-label="Interactive 3D property model showing sunlight, shadows, compass, and hourly sun positions" aria-describedby="canvas-study-summary solar-study-table"></div>
+
+  <!-- Loading Screen -->
+  <div id="loader" role="status" aria-live="polite" aria-busy="true">
+    <div class="spinner"></div>
+    <div style="font-size: 14px; font-weight: 500; color: #8b949e;">Rendering 3D Garden & Solar Path...</div>
+  </div>
+
+  <script type="module">
+    const entryUrl = new URL(document.baseURI);
+    const appBaseUrl = new URL(/\/viewer(?:\/index\.html)?\/?$/.test(entryUrl.pathname) ? "../" : "./", entryUrl);
+    await import(new URL("src/viewer/bootstrap.js", appBaseUrl));
+  </script>
+</body>
+</html>

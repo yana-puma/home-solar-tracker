@@ -1,0 +1,134 @@
+{
+  "$schema": "../../schemas/property.schema.v2.json",
+  "schemaVersion": 2,
+  "package": {
+    "id": "demo",
+    "label": "Fictional house and garden",
+    "revision": "fictional-1",
+    "description": "Invented primitive geometry; not a reconstruction of any actual house. Coordinates are a coarse hypothetical study location."
+  },
+  "location": {
+    "latitude": 40,
+    "longitude": -80,
+    "timeZone": "America/New_York",
+    "displayLabel": "Fictional sample garden",
+    "precision": "regional"
+  },
+  "assets": [
+    {
+      "id": "model",
+      "type": "model",
+      "url": "model.glb",
+      "size": 36668,
+      "integrity": "sha256-6VaMEKzojaLt+YzgKic9xfkY/wqx2o/d2a+mKR39auA="
+    }
+  ],
+  "model": {
+    "assetId": "model",
+    "units": "meters",
+    "scale": 1,
+    "northOffsetDegrees": 0,
+    "position": [
+      0,
+      0,
+      0
+    ]
+  },
+  "scene": {
+    "groundBounds": {
+      "minX": -20,
+      "maxX": 20,
+      "minZ": -20,
+      "maxZ": 20
+    },
+    "terrainProfile": [],
+    "cameraPresets": {
+      "overview": {
+        "label": "Garden overview",
+        "position": [
+          -30,
+          25,
+          35
+        ],
+        "target": [
+          0,
+          1,
+          0
+        ]
+      },
+      "top": {
+        "label": "Garden plan",
+        "position": [
+          0,
+          50,
+          0.01
+        ],
+        "target": [
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  "zones": [
+    {
+      "id": "east-bed",
+      "title": "Garden bed A",
+      "purpose": "garden",
+      "surface": "ground",
+      "elevation": 0,
+      "geometry": {
+        "type": "rectangle",
+        "minX": -10.5,
+        "maxX": -7.5,
+        "minZ": 1.5,
+        "maxZ": 6.5
+      },
+      "sunlightThresholds": {
+        "minimumDailyHours": 6
+      }
+    },
+    {
+      "id": "south-bed",
+      "title": "Garden bed B",
+      "purpose": "garden",
+      "surface": "ground",
+      "elevation": 0,
+      "geometry": {
+        "type": "rectangle",
+        "minX": 1.5,
+        "maxX": 6.5,
+        "minZ": 10.5,
+        "maxZ": 13.5
+      },
+      "sunlightThresholds": {
+        "minimumDailyHours": 6
+      }
+    },
+    {
+      "id": "patio",
+      "title": "Patio",
+      "purpose": "patio",
+      "surface": "ground",
+      "elevation": 0,
+      "geometry": {
+        "type": "rectangle",
+        "minX": -4,
+        "maxX": 4,
+        "minZ": 4.5,
+        "maxZ": 8.5
+      }
+    }
+  ],
+  "solar": {
+    "defaultDate": "today",
+    "samplingMinutes": 30,
+    "exposureMethod": "raycast"
+  },
+  "privacy": {
+    "visibility": "public",
+    "showAddress": false,
+    "showExactLocation": false
+  }
+}

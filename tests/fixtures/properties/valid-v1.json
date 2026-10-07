@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "slug": "legacy-garden",
+  "title": "Legacy Garden",
+  "description": "A schemaVersion 1 adapter fixture.",
+  "location": {
+    "latitude": 38.9,
+    "longitude": -77,
+    "timeZone": "America/New_York",
+    "displayLabel": "Mid-Atlantic example",
+    "showExactLocation": false
+  },
+  "model": {
+    "url": "./model.glb",
+    "units": "meters",
+    "scale": 1,
+    "northOffsetDegrees": 0,
+    "position": [0, 0, 0]
+  },
+  "scene": {
+    "groundBounds": {"minX": -25, "maxX": 25, "minZ": -25, "maxZ": 25},
+    "terrainProfile": [[-25, 0], [25, 0]],
+    "cameraPresets": {
+      "overview": {"label": "Overview", "position": [38, 28, 38], "target": [0, 0, 0]}
+    }
+  },
+  "zones": [],
+  "solar": {"defaultDate": "today", "samplingMinutes": 15, "exposureMethod": "estimated"},
+  "privacy": {"showAddress": false}
+}

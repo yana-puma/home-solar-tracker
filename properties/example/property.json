@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "slug": "example",
+  "title": "Garden Solar Study",
+  "description": "A generic example property for testing the configurable solar viewer.",
+  "location": {
+    "latitude": 39.0,
+    "longitude": -77.0,
+    "timeZone": "America/New_York",
+    "displayLabel": "Mid-Atlantic example",
+    "showExactLocation": false
+  },
+  "model": {
+    "url": "../../output/property_model.glb",
+    "units": "meters",
+    "scale": 1,
+    "northOffsetDegrees": 0,
+    "position": [0, 0, 0]
+  },
+  "scene": {
+    "groundBounds": {
+      "minX": -25,
+      "minZ": -25,
+      "maxX": 25,
+      "maxZ": 35
+    },
+    "terrainProfile": [],
+    "cameraPresets": {
+      "overview": {
+        "label": "Overview",
+        "position": [38, 28, 38],
+        "target": [0, 0, 0]
+      },
+      "garden": {
+        "label": "Garden",
+        "position": [16, 10, 22],
+        "target": [0, 1, 6]
+      }
+    }
+  },
+  "zones": [
+    {
+      "id": "sample-garden",
+      "title": "Sample garden",
+      "position": [7, 0, 9]
+    }
+  ],
+  "solar": {
+    "defaultDate": "today",
+    "samplingMinutes": 15
+  },
+  "privacy": {
+    "showAddress": false
+  }
+}

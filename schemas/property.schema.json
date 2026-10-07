@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://property-solar.local/schemas/property.schema.json",
+  "title": "Property Solar Viewer configuration",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schemaVersion", "slug", "title", "location", "model", "scene"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "slug": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,62}$"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 120},
+    "description": {"type": "string", "maxLength": 500},
+    "location": {
+      "type": "object",
+      "required": ["latitude", "longitude", "timeZone", "displayLabel"],
+      "properties": {
+        "latitude": {"type": "number", "minimum": -90, "maximum": 90},
+        "longitude": {"type": "number", "minimum": -180, "maximum": 180},
+        "timeZone": {"type": "string", "minLength": 1},
+        "displayLabel": {"type": "string", "minLength": 1, "maxLength": 120},
+        "showExactLocation": {"type": "boolean", "default": false}
+      }
+    },
+    "model": {
+      "type": "object",
+      "required": ["url"],
+      "properties": {
+        "url": {"type": "string", "minLength": 1},
+        "units": {"enum": ["meters", "feet", "centimeters", "millimeters"]},
+        "scale": {"type": "number", "exclusiveMinimum": 0},
+        "northOffsetDegrees": {"type": "number", "minimum": -360, "maximum": 360},
+        "position": {"$ref": "#/$defs/vector3"}
+      }
+    },
+    "scene": {
+      "type": "object",
+      "required": ["groundBounds"],
+      "properties": {
+        "groundBounds": {
+          "type": "object",
+          "required": ["minX", "maxX", "minZ", "maxZ"],
+          "properties": {
+            "minX": {"type": "number"},
+            "maxX": {"type": "number"},
+            "minZ": {"type": "number"},
+            "maxZ": {"type": "number"}
+          }
+        },
+        "terrainProfile": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "array",
+            "prefixItems": [{"type": "number"}, {"type": "number"}],
+            "items": false
+          }
+        },
+        "cameraPresets": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["position", "target"],
+            "properties": {
+              "label": {"type": "string"},
+              "position": {"$ref": "#/$defs/vector3"},
+              "target": {"$ref": "#/$defs/vector3"}
+            }
+          }
+        }
+      }
+    },
+    "zones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "position"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "title": {"type": "string", "minLength": 1},
+          "position": {"$ref": "#/$defs/vector3"}
+        }
+      }
+    },
+    "solar": {
+      "type": "object",
+      "properties": {
+        "defaultDate": {"type": "string"},
+        "samplingMinutes": {"type": "integer", "minimum": 1, "maximum": 120},
+        "exposureMethod": {"enum": ["estimated", "raycast"]}
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "properties": {"showAddress": {"type": "boolean", "default": false}}
+    }
+  },
+  "$defs": {
+    "vector3": {
+      "type": "array",
+      "prefixItems": [{"type": "number"}, {"type": "number"}, {"type": "number"}],
+      "items": false
+    }
+  }
+}

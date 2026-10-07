@@ -1,0 +1,78 @@
+{
+  "$schema": "../../../schemas/property.schema.v2.json",
+  "schemaVersion": 2,
+  "package": {
+    "id": "garden-study",
+    "label": "Garden Solar Study",
+    "revision": "2026.08.24-1",
+    "description": "A portable v2 property package fixture."
+  },
+  "location": {
+    "latitude": 38.9,
+    "longitude": -77,
+    "timeZone": "America/New_York",
+    "displayLabel": "Mid-Atlantic example",
+    "precision": "regional"
+  },
+  "assets": [
+    {
+      "id": "house-model",
+      "type": "model",
+      "url": "./model.glb",
+      "size": 428148,
+      "integrity": "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="
+    },
+    {
+      "id": "preview",
+      "type": "thumbnail",
+      "url": "./preview.png",
+      "size": 2048,
+      "integrity": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    }
+  ],
+  "model": {
+    "assetId": "house-model",
+    "units": "meters",
+    "scale": 1,
+    "northOffsetDegrees": 12.5,
+    "position": [0, 0, 0]
+  },
+  "scene": {
+    "groundBounds": {"minX": -25, "maxX": 25, "minZ": -30, "maxZ": 45},
+    "terrainProfile": [[-30, 0], [45, -2]],
+    "cameraPresets": {
+      "overview": {
+        "label": "Overview",
+        "position": [38, 28, 38],
+        "target": [0, 0, 0]
+      }
+    }
+  },
+  "zones": [
+    {"id": "patio", "title": "Patio", "position": [2, 0, 8]}
+  ],
+  "solar": {
+    "defaultDate": "today",
+    "samplingMinutes": 15,
+    "exposureMethod": "raycast",
+    "features": {
+      "sunPath": true,
+      "sunMap": true,
+      "compass": true,
+      "timelapse": false,
+      "annualStudy": true
+    }
+  },
+  "privacy": {
+    "visibility": "unlisted",
+    "showExactLocation": false,
+    "showAddress": false
+  },
+  "ui": {
+    "theme": {
+      "mode": "dark",
+      "accentColor": "#f59e0b",
+      "skyStyle": "gradient"
+    }
+  }
+}

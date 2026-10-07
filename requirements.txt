@@ -1,0 +1,26 @@
+# Core Scientific & Math
+numpy>=1.22.0
+scipy>=1.8.0
+
+# Point Cloud & 3D Mesh Processing
+laspy[lazrs]>=2.5.0
+trimesh>=4.0.0
+networkx>=3.0
+# open3d>=0.17.0  # Optional (available on Python <=3.12)
+
+# Spatial & GIS
+shapely>=2.0.0
+geopandas>=0.13.0
+pyproj>=3.5.0
+
+# CAD & Vector Formats
+ezdxf>=1.1.0
+
+# Networking & Utilities
+requests>=2.28.0
+pillow>=9.5.0
+
+# Optional plotting and video tooling
+matplotlib>=3.8.0
+imageio>=2.30.0
+imageio-ffmpeg>=0.4.9

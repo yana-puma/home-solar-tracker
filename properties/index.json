@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "defaultProperty": "demo",
+  "properties": [
+    {
+      "slug": "demo",
+      "title": "Fictional house and garden",
+      "displayLabel": "Fictional sample garden",
+      "revision": "fictional-1",
+      "configUrl": "./demo/property.json",
+      "modelUrl": "./demo/model.glb",
+      "privacyTier": "public",
+      "updatedAt": "2026-10-07T00:00:00Z"
+    }
+  ]
+}

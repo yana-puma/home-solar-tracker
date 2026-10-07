@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 2,
+  "package": {"id": "unknown-field", "label": "Unknown field", "revision": "1", "ownerEmail": "private@example.com"},
+  "location": {"latitude": 38.9, "longitude": -77, "timeZone": "America/New_York", "displayLabel": "Example", "precision": "regional"},
+  "assets": [{"id": "model", "type": "model", "url": "./model.glb", "size": 1, "integrity": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", "privatePath": "/tmp/model.glb"}],
+  "model": {"assetId": "model"},
+  "scene": {"groundBounds": {"minX": -1, "maxX": 1, "minZ": -1, "maxZ": 1, "radius": 10}},
+  "unexpected": true
+}

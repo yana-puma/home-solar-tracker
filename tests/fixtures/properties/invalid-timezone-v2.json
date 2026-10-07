@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 2,
+  "package": {"id": "bad-timezone", "label": "Bad timezone", "revision": "1"},
+  "location": {"latitude": 38.9, "longitude": -77, "timeZone": "Eastern Time", "displayLabel": "Example", "precision": "regional"},
+  "assets": [{"id": "model", "type": "model", "url": "./model.glb", "size": 1, "integrity": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="}],
+  "model": {"assetId": "model"},
+  "scene": {"groundBounds": {"minX": -1, "maxX": 1, "minZ": -1, "maxZ": 1}}
+}

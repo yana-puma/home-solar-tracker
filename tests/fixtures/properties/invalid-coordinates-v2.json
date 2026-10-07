@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 2,
+  "package": {"id": "bad-coordinates", "label": "Bad coordinates", "revision": "1"},
+  "location": {"latitude": 91, "longitude": "-77", "timeZone": "America/New_York", "displayLabel": "Example", "precision": "regional"},
+  "assets": [{"id": "model", "type": "model", "url": "./model.glb", "size": 1, "integrity": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="}],
+  "model": {"assetId": "model"},
+  "scene": {"groundBounds": {"minX": -1, "maxX": 1, "minZ": -1, "maxZ": 1}}
+}
