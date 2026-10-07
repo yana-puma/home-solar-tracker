@@ -43,6 +43,8 @@ Resume commands: `git status --short`, read this section and the latest work log
 
 - Fresh-clone verification: cloned the public GitHub default branch into ignored `output/public-source/clone-check/`; 110 tracked files, only the fresh pseudonymous commits, no old history. All 167 JS and scientific Python tests passed in that clone. Source audit with the local private marker policy passed on the clone. GitHub HEAD points at `codex/public-handoff`, so a normal clone selects it. Added a final guard: an explicitly requested missing private marker policy blocks export instead of silently skipping it.
 
+- Added Git ignore safeguards for private ZIP/GLB/property.json downloads and common raw survey/CAD/GIS formats, with explicit fictional-demo/example exceptions. Verified with real `git check-ignore --no-index` behavior before publication.
+
 ### Remaining steps for the next harness
 
 1. Read this checkpoint and `git status --short`; preserve the ignored personal backups. Regenerate the source archive after any edit: `python3 scripts/export_public_source.py`. The `.inventory.json` lists exactly what is exported. Do not add `data/`, `output/`, `local-properties/`, or this checkout's old `.git` history to public GitHub.
