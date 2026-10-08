@@ -54,7 +54,7 @@ local-properties/
 **/*.mp4
 
 # Legacy/local examples duplicate the root viewer or reference private output/.
-viewer/
+/viewer/
 properties/example/
 
 # The approved public artifact remains properties/demo/model.glb.

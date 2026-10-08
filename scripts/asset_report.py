@@ -79,7 +79,7 @@ class IgnoreRules:
             if negated:
                 line = line[1:]
             directory = line.endswith("/")
-            line = line.strip("/")
+            line = line.rstrip("/")
             if line:
                 self.rules.append((negated, line, directory))
 
@@ -92,12 +92,18 @@ class IgnoreRules:
 
     @staticmethod
     def _matches(path: str, pattern: str, directory: bool, is_dir: bool) -> bool:
+        anchored = pattern.startswith("/")
+        pattern = pattern.lstrip("/")
         candidates = [pattern]
         if pattern.startswith("**/"):
             candidates.append(pattern[3:])
         if directory:
+            if not anchored and "/" not in pattern:
+                parts = path.split("/")
+                parents = parts if is_dir else parts[:-1]
+                return any(fnmatch.fnmatchcase(part, pattern) for part in parents)
             return any(path == value or path.startswith(value + "/") for value in candidates)
-        if "/" not in pattern:
+        if not anchored and "/" not in pattern:
             return any(fnmatch.fnmatchcase(part, pattern) for part in path.split("/"))
         return any(fnmatch.fnmatchcase(path, value) for value in candidates)
 

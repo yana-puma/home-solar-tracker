@@ -1,5 +1,7 @@
 # Home Solar Tracker
 
+[Open the live fictional garden sample](https://home-solar-tracker.vercel.app/). You can also open a house ZIP locally in the browser; choosing a ZIP does not upload it.
+
 Home Solar Tracker is a static 3D viewer for exploring how the Sun moves across a property during the year. It combines a calibrated GLB house model with local date, time, coordinates, and time-zone settings to show cast shadows, solar paths, daylight comparisons, model-derived direct-sun exposure, and an optional clear-sky PV planning range.
 
 It is designed for homeowner questions such as:

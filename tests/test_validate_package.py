@@ -324,6 +324,10 @@ class PackageValidationTests(unittest.TestCase):
 
         rules = IgnoreRules.from_root(REPO_ROOT)
         self.assertTrue(rules.ignores("viewer/private-house-model.glb"))
+        self.assertFalse(rules.ignores("src/viewer/bootstrap.js"))
+        self.assertFalse(rules.ignores("src/viewer/viewer-controls.css"))
+        self.assertTrue(IgnoreRules(["viewer/"]).ignores("src/viewer/bootstrap.js"))
+        self.assertFalse(IgnoreRules(["/viewer/"]).ignores("src/viewer/bootstrap.js"))
         self.assertTrue(rules.ignores("data/raw/survey.las"))
         self.assertFalse(rules.ignores("properties/demo/model.glb"))
 

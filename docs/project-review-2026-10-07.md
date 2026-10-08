@@ -4,7 +4,7 @@ Reviewed October 7, 2026, against commit `e54fcf9`. The working tree was clean a
 
 ## Execution checkpoint — start here when continuing
 
-Status: **reusable implementation and clean GitHub publication complete; real-house/device acceptance remains**. Original review findings below describe the baseline, not necessarily the current code. Update this checkpoint after each implementation slice and before stopping.
+Status: **reusable implementation, clean GitHub publication, and Vercel production deployment complete; real-house/device acceptance remains**. Original review findings below describe the baseline, not necessarily the current code. Update this checkpoint after each implementation slice and before stopping.
 
 Constraints: never use Firefox; keep real property data private; preserve existing work; do not publish a fictional fixture as the friend's house. Work directly in this checkout. No subagents were requested. User explicitly authorized execution and ongoing plan updates.
 
@@ -15,6 +15,7 @@ Constraints: never use Firefox; keep real property data private; preserve existi
 | Phase 2B: package install and identity | Complete | Strict local ZIP opening and immutable private installer; direct/local identity and manifest verification covered by regression tests and second-house browser checks. |
 | Phase 2C: generic pipeline | Complete | Axis conversion, no synthetic fallback, explicit demo, terrain/synthetic real-property rejection tested. Survey CRS/units/true north still require input review. |
 | Public source privacy | Published clean history | `https://github.com/yana-puma/home-solar-tracker` on `codex/public-handoff`, fresh root commit `15fff5b`. 110 audited files; original history/data excluded; public pseudonym and GitHub no-reply attribution. Original local checkout remains private. |
+| Vercel hosting | Production verified | `https://home-solar-tracker.vercel.app/` serves the fictional sample. Deploy only the clean publication checkout; its ignored `.vercel/` link targets the new project. No automatic Git deployment connection configured. |
 | Phase 3: actual friend's model | Needs input | No real model/source supplied. Do not substitute demo geometry. |
 | Phase 4: simple handoff | Implemented | Restricted Python launcher, garden quickstart, measured scale, readiness gate, draft ZIP save/reopen, blue zone outlines, property cameras, share tier. Device download/draft acceptance remains. |
 | Phase 5: verification | Automated and core browser flows passed | 167 JS; 35 Python with science environment; standard Python 32 pass + 3 science skips; public audit clean. Browser sample exposure, second-house ZIP, identity, qualified zone details, and builder scale/gates checked. Downloads, draft reopen and physical devices remain unconfirmed. |
@@ -44,6 +45,11 @@ Resume commands: `git status --short`, read this section and the latest work log
 - Fresh-clone verification: cloned the public GitHub default branch into ignored `output/public-source/clone-check/`; 110 tracked files, only the fresh pseudonymous commits, no old history. All 167 JS and scientific Python tests passed in that clone. Source audit with the local private marker policy passed on the clone. GitHub HEAD points at `codex/public-handoff`, so a normal clone selects it. Added a final guard: an explicitly requested missing private marker policy blocks export instead of silently skipping it.
 
 - Added Git ignore safeguards for private ZIP/GLB/property.json downloads and common raw survey/CAD/GIS formats, with explicit fictional-demo/example exceptions. Verified with real `git check-ignore --no-index` behavior before publication.
+
+- October 8 hosting checkpoint: user explicitly requested Vercel deployment. The original checkout's old `atlee-3d` project link is stale (404). Created and linked `home-solar-tracker` in the same connected team using the installed CLI after the connector returned a project-creation permission error. Production URL: `https://home-solar-tracker.vercel.app/`; verified deployment `dpl_26P9Ky86CCjyaVcgLwAcUWdNQPzW`. Deployed only the audited clean publication checkout, with ignored local Vercel metadata/environment files excluded.
+- Production verification found the unanchored `.vercelignore` rule `viewer/` also omitted `src/viewer/`, causing a bootstrap 404. Changed it to `/viewer/`, aligned directory-rule auditing with Vercel semantics, and added regression assertions. Python checks passed (32 pass, 3 science skips); privacy export passed (110 files). Redeployment serves bootstrap and fictional GLB with HTTP 200; browser loaded the fictional house, completed June 21 Standard Worker exposure, and showed Garden bed A at 11.1 hours with its qualified 6-hour target. No new browser errors after correction. Screenshot stays private in `output/vercel-production-preview.jpg`.
+- Future hosting updates: use the clean publication checkout's verified project link, rerun privacy/source checks, then `vercel deploy --prod --non-interactive` with the connected team explicitly selected. Never deploy the original private checkout. Existing local house/device acceptance tasks below remain.
+- Hosting asset acceptance: all 38 viewer/builder/module/config/model assets fetched from production matched the clean checkout byte for byte. Private environment, data, local-property registry and legacy viewer paths returned 404. Deployment uses CLI uploads; GitHub auto-deploy is not configured.
 
 ### Remaining steps for the next harness
 
